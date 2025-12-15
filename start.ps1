@@ -24,7 +24,7 @@ if (-not (Test-Path "node_modules")) {
 
 # Start the server in background
 Write-Host "Starting local server...`n" -ForegroundColor Green
-$serverProcess = Start-Process -FilePath "node" -ArgumentList "src/server/index.js" -PassThru -WindowStyle Hidden
+$serverProcess = Start-Process -FilePath "node" -ArgumentList "src/server/index.js" -PassThru -NoNewWindow
 
 # Wait a moment for server to start
 Start-Sleep -Seconds 2

@@ -70,16 +70,11 @@ function handleWebSocketMessage(data) {
 // Update connection status indicator
 function updateConnectionStatus(connected) {
     const statusElement = document.getElementById('connectionStatus');
-    const statusDot = statusElement.querySelector('.status-dot');
     
     if (connected) {
         statusElement.innerHTML = '<span class="status-dot connected"></span> Connected';
-        statusDot.classList.add('connected');
-        statusDot.classList.remove('disconnected');
     } else {
         statusElement.innerHTML = '<span class="status-dot disconnected"></span> Disconnected';
-        statusDot.classList.add('disconnected');
-        statusDot.classList.remove('connected');
     }
 }
 
@@ -335,8 +330,9 @@ function closeTab(btn) {
     
     // If closing active tab, switch to another
     if (tab.classList.contains('active')) {
-        const nextTab = tab.nextElementSibling?.classList.contains('tab') 
-            ? tab.nextElementSibling 
+        const nextSibling = tab.nextElementSibling;
+        const nextTab = (nextSibling && nextSibling.classList.contains('tab'))
+            ? nextSibling 
             : tab.previousElementSibling;
         
         if (nextTab) {
