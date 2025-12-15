@@ -15,6 +15,9 @@ const PORT = process.env.PORT || 3000;
 let chatHistory = [];
 let notes = [];
 let stickers = [];
+let messageIdCounter = 0;
+let noteIdCounter = 0;
+let stickerIdCounter = 0;
 
 // Serve static files
 app.use(express.static(path.join(__dirname, '../../public')));
@@ -38,7 +41,7 @@ app.post('/api/message', (req, res) => {
   }
   
   const message = {
-    id: Date.now() + Math.random(), // Add randomness to prevent collisions
+    id: ++messageIdCounter,
     text: req.body.text.trim(),
     sender: sender,
     timestamp: new Date().toISOString()
@@ -62,7 +65,7 @@ app.post('/api/note', (req, res) => {
   }
   
   const note = {
-    id: Date.now() + Math.random(),
+    id: ++noteIdCounter,
     content: req.body.content.trim(),
     timestamp: new Date().toISOString()
   };
@@ -79,9 +82,18 @@ app.post('/api/note', (req, res) => {
 });
 
 app.post('/api/sticker', (req, res) => {
+  // Input validation
+  if (!req.body.emoji || typeof req.body.emoji !== 'string' || req.body.emoji.trim().length === 0) {
+    return res.status(400).json({ error: 'Invalid emoji' });
+  }
+  
+  if (!req.body.messageId || typeof req.body.messageId !== 'number') {
+    return res.status(400).json({ error: 'Invalid messageId' });
+  }
+  
   const sticker = {
-    id: Date.now(),
-    emoji: req.body.emoji,
+    id: ++stickerIdCounter,
+    emoji: req.body.emoji.trim(),
     messageId: req.body.messageId,
     timestamp: new Date().toISOString()
   };
