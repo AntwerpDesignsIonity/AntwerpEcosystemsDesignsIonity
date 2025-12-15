@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Copilot Chat - GUI Interface</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar with History -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>💬 Chat History</h2>
+                <button id="clearHistoryBtn" class="btn-icon" title="Clear History">🗑️</button>
+            </div>
+            
+            <div class="tabs-container">
+                <div class="tab active" data-tab="chat-1">
+                    <span class="tab-icon">💭</span>
+                    <span class="tab-name">Chat 1</span>
+                    <button class="tab-close">×</button>
+                </div>
+                <button id="addTabBtn" class="tab-add">+ New Tab</button>
+            </div>
+            
+            <div class="notes-section">
+                <h3>📝 Notes</h3>
+                <div id="notesList" class="notes-list"></div>
+                <div class="note-input-container">
+                    <textarea id="noteInput" placeholder="Add a note..." rows="2"></textarea>
+                    <button id="addNoteBtn" class="btn-primary">Add Note</button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Chat Area -->
+        <main class="chat-main">
+            <header class="chat-header">
+                <div class="header-left">
+                    <h1>🤖 Copilot CLI Chat</h1>
+                    <span class="connection-status" id="connectionStatus">
+                        <span class="status-dot"></span>
+                        Connecting...
+                    </span>
+                </div>
+                <div class="header-right">
+                    <span class="info-text">Synced with CLI</span>
+                </div>
+            </header>
+
+            <div class="chat-content" id="chatContent">
+                <div class="welcome-message">
+                    <h2>Welcome to Copilot Chat!</h2>
+                    <p>Start a conversation in the CLI or type here.</p>
+                    <p class="info-hint">💡 Messages sent from CLI will appear here in real-time</p>
+                </div>
+            </div>
+
+            <div class="stickers-panel" id="stickersPanel" style="display: none;">
+                <div class="stickers-grid">
+                    <button class="sticker-btn" data-emoji="👍">👍</button>
+                    <button class="sticker-btn" data-emoji="❤️">❤️</button>
+                    <button class="sticker-btn" data-emoji="😂">😂</button>
+                    <button class="sticker-btn" data-emoji="🎉">🎉</button>
+                    <button class="sticker-btn" data-emoji="🔥">🔥</button>
+                    <button class="sticker-btn" data-emoji="👏">👏</button>
+                    <button class="sticker-btn" data-emoji="✨">✨</button>
+                    <button class="sticker-btn" data-emoji="💯">💯</button>
+                </div>
+            </div>
+
+            <footer class="chat-footer">
+                <div class="input-container">
+                    <button id="stickerToggleBtn" class="btn-icon" title="Add Sticker">😊</button>
+                    <input type="text" id="messageInput" placeholder="Type a message..." />
+                    <button id="sendBtn" class="btn-primary">Send</button>
+                </div>
+            </footer>
+        </main>
+    </div>
+
+    <script src="/js/app.js"></script>
+</body>
+</html>
