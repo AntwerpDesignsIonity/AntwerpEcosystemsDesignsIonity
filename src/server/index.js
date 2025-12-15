@@ -10,7 +10,8 @@ const wss = new WebSocket.Server({ server });
 
 const PORT = process.env.PORT || 3000;
 
-// Store chat messages in memory (could be persisted to file/db)
+// Store chat messages in memory (data is lost when server restarts)
+// For persistent storage, consider implementing file-based or database storage
 let chatHistory = [];
 let notes = [];
 let stickers = [];
@@ -25,10 +26,21 @@ app.get('/api/history', (req, res) => {
 });
 
 app.post('/api/message', (req, res) => {
+  // Input validation
+  if (!req.body.text || typeof req.body.text !== 'string' || req.body.text.trim().length === 0) {
+    return res.status(400).json({ error: 'Invalid message text' });
+  }
+  
+  const allowedSenders = ['user', 'copilot'];
+  const sender = req.body.sender || 'user';
+  if (!allowedSenders.includes(sender)) {
+    return res.status(400).json({ error: 'Invalid sender' });
+  }
+  
   const message = {
-    id: Date.now(),
-    text: req.body.text,
-    sender: req.body.sender || 'user',
+    id: Date.now() + Math.random(), // Add randomness to prevent collisions
+    text: req.body.text.trim(),
+    sender: sender,
     timestamp: new Date().toISOString()
   };
   chatHistory.push(message);
@@ -44,9 +56,14 @@ app.post('/api/message', (req, res) => {
 });
 
 app.post('/api/note', (req, res) => {
+  // Input validation
+  if (!req.body.content || typeof req.body.content !== 'string' || req.body.content.trim().length === 0) {
+    return res.status(400).json({ error: 'Invalid note content' });
+  }
+  
   const note = {
-    id: Date.now(),
-    content: req.body.content,
+    id: Date.now() + Math.random(),
+    content: req.body.content.trim(),
     timestamp: new Date().toISOString()
   };
   notes.push(note);

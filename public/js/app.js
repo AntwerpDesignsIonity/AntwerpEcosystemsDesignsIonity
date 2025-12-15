@@ -1,6 +1,7 @@
 // WebSocket connection
 let ws;
 let reconnectInterval;
+let reconnectAttempts = 0;
 let currentTab = 'chat-1';
 let tabCounter = 1;
 let selectedMessageId = null;
@@ -12,36 +13,48 @@ function init() {
     loadHistory();
 }
 
-// Connect to WebSocket server
+// Connect to WebSocket server with exponential backoff
 function connectWebSocket() {
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    ws = new WebSocket(`${protocol}//${window.location.host}`);
     
-    ws.onopen = () => {
-        console.log('WebSocket connected');
-        updateConnectionStatus(true);
-        clearInterval(reconnectInterval);
-    };
-    
-    ws.onmessage = (event) => {
-        const data = JSON.parse(event.data);
-        handleWebSocketMessage(data);
-    };
-    
-    ws.onclose = () => {
-        console.log('WebSocket disconnected');
-        updateConnectionStatus(false);
+    try {
+        ws = new WebSocket(`${protocol}//${window.location.host}`);
         
-        // Attempt to reconnect
-        reconnectInterval = setInterval(() => {
-            console.log('Attempting to reconnect...');
-            connectWebSocket();
-        }, 3000);
-    };
-    
-    ws.onerror = (error) => {
-        console.error('WebSocket error:', error);
-    };
+        ws.onopen = () => {
+            console.log('WebSocket connected');
+            updateConnectionStatus(true);
+            reconnectAttempts = 0; // Reset counter on successful connection
+            clearInterval(reconnectInterval);
+        };
+        
+        ws.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+            handleWebSocketMessage(data);
+        };
+        
+        ws.onclose = () => {
+            console.log('WebSocket disconnected');
+            updateConnectionStatus(false);
+            
+            // Exponential backoff for reconnection (max 30 seconds)
+            const delay = Math.min(1000 * Math.pow(2, reconnectAttempts), 30000);
+            reconnectAttempts++;
+            
+            clearInterval(reconnectInterval);
+            reconnectInterval = setTimeout(() => {
+                console.log(`Attempting to reconnect (attempt ${reconnectAttempts})...`);
+                connectWebSocket();
+            }, delay);
+        };
+        
+        ws.onerror = (error) => {
+            console.error('WebSocket error:', error);
+            ws.close(); // Trigger onclose handler for reconnection
+        };
+    } catch (error) {
+        console.error('Failed to create WebSocket:', error);
+        updateConnectionStatus(false);
+    }
 }
 
 // Handle WebSocket messages
